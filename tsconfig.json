@@ -1,4 +1,5 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
-  "moduleResolution":"node"
+  "moduleResolution":"node",
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
 }
