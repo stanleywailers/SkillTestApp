@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import Resources from '../constanst/Resources';
+import { TradeResponse } from '../model/TradeResponse';
 
 interface WebSocketContextProps {
   ws: WebSocket | null;
@@ -26,7 +27,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.log(event.data);
     };
 
-    socket.onerror = (error: Event) => {
+    socket.onerror = (error: any) => {
       
       console.log(error);
     };
@@ -43,6 +44,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return () => {
       
       if (ws) {
+       // console.log('close socket')
        // ws.close();
       }
     };

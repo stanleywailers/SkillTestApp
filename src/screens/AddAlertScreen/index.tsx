@@ -1,46 +1,60 @@
 import React, {useEffect, useState} from 'react';
-import {Text, View, TextInput} from 'react-native';
+import {Text, View, TextInput,AsyncStorage} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
-import { socket } from '../../../App';
-import { CustomButton } from '../../components/CustomButton/index';
-import { useWebSocket } from '../../hooks/WebSocketProvider';
+import {socket} from '../../../App';
+import {CustomButton} from '../../components/CustomButton/index';
+import {useWebSocket} from '../../hooks/WebSocketProvider';
 import {Stock} from '../../model/stock';
 import {readAllStocks} from '../../services/stock';
 import {styles} from './styles';
+import {Notifications} from 'react-native-notifications';
+import {TradeResponse} from '../../model/TradeResponse';
 
 export const AddAlertScreen = () => {
   const [selectedStock, setSelectedStock] = useState(null);
   const [priceAlert, setPriceAlert] = useState('');
   const [stocks, setStocks] = useState<Stock[]>();
   const [text, onChangeText] = useState('');
-  const { ws, setWs ,openConnection} = useWebSocket();
-  
+  const {ws, setWs, openConnection} = useWebSocket();
 
-  
   const setSubscription = () => {
     if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'subscribe', symbol: 'AAPL' }));
-      } else {
-        console.error('WebSocket connection is not open');
-      }
+        console.log(selectedStock)
+      ws.send(JSON.stringify({type: 'subscribe', symbol: 'BINANCE:BTCUSDT'}));
+    } else {
+      console.error('WebSocket connection is not open');
     }
-
-    if (ws) {
-        ws.onmessage = (event: any) => {
-          console.log(event.data);
-        };
-      } else {
-        console.error('WebSocket connection is null');
-      }
-
-  const onMessage = (event: any) => {
-    console.log('Message from server ', event.data);
   };
+
+  if (ws) {
+    ws.onmessage = (event: any) => {
+     const eventData: TradeResponse = JSON.parse(event.data);
+      console.log(event)
+     console.log(eventData)
+      if (
+        eventData &&
+        eventData.type === 'trade' &&
+        eventData.data &&
+        eventData.data.length > 0
+      ) {
+        const tradeData = eventData.data[0];
+        Notifications.postLocalNotification({
+          title: tradeData.s,
+          body: `This is the last price ${tradeData.p}`,
+          extra: 'data',
+        });
+        ws.send(JSON.stringify({type:'unsubscribe','symbol': 'BINANCE:BTCUSDT'}))
+      }
+    };
+  } else {
+    console.error('WebSocket connection is null');
+  }
 
   useEffect(() => {
     const getStocks = async () => {
       const response = await readAllStocks();
       if (response.ok) {
+        console.log(response.data);
         setStocks(response.data);
       }
     };
@@ -49,9 +63,8 @@ export const AddAlertScreen = () => {
   }, []);
 
   useEffect(() => {
-    openConnection
-  }, [])
-  
+    openConnection;
+  }, []);
 
   return (
     <View>
@@ -71,9 +84,13 @@ export const AddAlertScreen = () => {
         style={styles.input}
         onChangeText={onChangeText}
         value={text}
+        placeholder='Price Alert'
         keyboardType="numeric"></TextInput>
 
-        <CustomButton onPress={setSubscription}></CustomButton>
+      <CustomButton onPress={() => {
+        console.log(text)
+        AsyncStorage.setItem('keyalertPrice', text);
+        setSubscription}}></CustomButton>
     </View>
   );
 };

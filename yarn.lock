@@ -5662,6 +5662,11 @@ react-native-gesture-handler@^2.14.1:
     lodash "^4.17.21"
     prop-types "^15.7.2"
 
+react-native-notifications@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-notifications/-/react-native-notifications-5.1.0.tgz#8cba105fd57ab9d5df9d27284acf1e2b4f3d7ea3"
+  integrity sha512-laqDSDlCvEASmJR6cXpqaryK855ejQd07vrfYERzhv68YDOoSkKy/URExRP4vAfAOVqHhix80tLbNUcfvZk2VQ==
+
 react-native-picker-select@^9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/react-native-picker-select/-/react-native-picker-select-9.0.0.tgz#4f9725c5f951d0aedf92cae0da21e40e439a4223"
