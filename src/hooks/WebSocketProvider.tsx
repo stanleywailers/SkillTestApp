@@ -7,6 +7,7 @@ interface WebSocketContextProps {
   ws: WebSocket | null;
   setWs: React.Dispatch<React.SetStateAction<WebSocket | null>>;
   openConnection: () => void;
+  restartConnection:() => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextProps | undefined>(undefined);
@@ -38,6 +39,16 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
   };
 
+  const restartConnection = () => {
+    
+    if (ws) {
+      ws.close();
+    }
+
+    
+    openConnection();
+  };
+
   useEffect(() => {
     openConnection();
 
@@ -51,7 +62,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, []); 
 
   return (
-    <WebSocketContext.Provider value={{ ws, setWs, openConnection }}>
+    <WebSocketContext.Provider value={{ ws, setWs, openConnection,restartConnection }}>
       {children}
     </WebSocketContext.Provider>
   );
